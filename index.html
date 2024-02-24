@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="key.css">
+</head>
+<body>
+    <h1 id="heading">Key Generation Page</h1>
+    <form id="key-form">
+        <label for="public-key">Public Key: </label>
+        <textarea id="public-key" readonly rows="3" cols="3"></textarea>
+        <br>
+        <label for="private-key">Private Key: </label>
+        <textarea id="private-key" readonly rows="3" cols="3"></textarea>
+        <br>
+        <button type="button" id="generate-keys">Generate Keys</button>
+    </form>   
+    
+
+    <div class="go-to">
+        <h2 id="heading2">Go To</h2>
+        <button id="encrypt" onclick="location.href='encryption.html';">Encrypt Page</button>
+        <button id="decrypt" onclick="location.href='decryption.html';">Decrypt Page</button>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const generateKeysButton = document.getElementById('generate-keys');
+        generateKeysButton.addEventListener('click', async () => {
+            const keyPair = await window.crypto.subtle.generateKey(
+            {
+                name: "RSA-OAEP",
+                modulusLength: 2048, // can be 1024, 2048, or 4096
+                publicExponent: new Uint8Array([1, 0, 1]),
+                hash: {name: "SHA-256"}, // can be "SHA-1", "SHA-256", "SHA-384", or "SHA-512"
+            },
+            true, // whether the key is extractable (i.e., can be used in exportKey)
+            ["encrypt", "decrypt"] // must be ["encrypt", "decrypt"] or ["wrapKey", "unwrapKey"]
+            );
+
+            const publicKey = await window.crypto.subtle.exportKey("spki", keyPair.publicKey);
+            const privateKey = await window.crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
+
+            // Convert keys to Base64 to display them or provide them for download
+            const publicKeyBase64 = btoa(String.fromCharCode.apply(null, new Uint8Array(publicKey)));
+            const privateKeyBase64 = btoa(String.fromCharCode.apply(null, new Uint8Array(privateKey)));
+
+            // Display or handle the base64 encoded keys as needed
+            document.getElementById('public-key').value = publicKeyBase64;
+            document.getElementById('private-key').value = privateKeyBase64;
+        });
+        });
+
+    </script>
+</body>
+</html>

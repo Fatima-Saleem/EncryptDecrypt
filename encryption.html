@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encryption Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="encrypt.css">
+</head>
+<body>
+    <h1 id="heading">Encryption Page</h1>
+    <form id="key-form">
+        <label for="public-keys">Public Key: </label>
+        <textarea id="public-key" type="text" placeholder="paste public key here" rows="3" cols="4"></textarea>
+        <br>
+        <label for="plain-textt">Plain Text: </label>
+        <textarea id="plain-text" type="text" placeholder="write text" rows="3" cols="4"></textarea>
+        <br>
+        <label for="Cipher-textt">Ciphertext: </label>
+        <textarea id="Cipher-text" type="text" placeholder="cipher will appear here after encrypt button is pressed" readonly rows="3" cols="4"></textarea>
+        <br>
+        <button type="button" id="encrypt-key">Encrypt</button>
+        <button type="button" id="back">Back</button>
+    </form>
+
+    <script>
+        const base64ToArrayBuffer = (base64) => {
+            const binaryString = window.atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            return bytes.map((byte, i) => binaryString.charCodeAt(i));
+        };
+        
+        const arrayBufferToBase64 = (buffer) => {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            const len = bytes.byteLength;
+            for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        };
+        
+        const encryptWithPublicKey = async (publicKeyBase64, plaintext) => {
+            const publicKeyBuffer = base64ToArrayBuffer(publicKeyBase64);
+            const importedKey = await window.crypto.subtle.importKey(
+                "spki",
+                publicKeyBuffer,
+                {
+                    name: "RSA-OAEP",
+                    hash: {name: "SHA-256"}
+                },
+                false,
+                ["encrypt"]
+            );
+        
+            const encoder = new TextEncoder();
+            const encodedText = encoder.encode(plaintext);
+            const encryptedData = await window.crypto.subtle.encrypt(
+                {
+                    name: "RSA-OAEP"
+                },
+                importedKey,
+                encodedText
+            );
+        
+            return arrayBufferToBase64(encryptedData);
+        };
+        
+        document.getElementById('encrypt-key').addEventListener('click', async () => {
+            const publicKeyBase64 = document.getElementById('public-key').value.trim();
+            const plaintext = document.getElementById('plain-text').value.trim();
+            if (publicKeyBase64 && plaintext) {
+                try {
+                    const encryptedTextBase64 = await encryptWithPublicKey(publicKeyBase64, plaintext);
+                    document.getElementById('Cipher-text').value = encryptedTextBase64;
+                } catch (error) {
+                    console.error('Encryption failed', error);
+                    alert('Encryption failed. Make sure the public key is correct and in the proper Base64-encoded format.');
+                }
+            } else {
+                alert('Please enter a public key and some plaintext to encrypt.');
+            }
+        });
+        
+        document.getElementById('back').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+        </script>
+        
+        
+
+</body>
+</html>

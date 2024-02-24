@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decryption Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="decrypt.css">
+</head>
+<body>
+    <h1 id="heading">Decryption Page</h1>
+    <form id="key-form">
+        <label for="private-keys">Private Key: </label>
+        <textarea id="private-key" type="text" placeholder="paste private key here" rows="3" cols="4"></textarea>
+        <br>
+        <label for="plain-textt">Plain Text: </label>
+        <textarea id="plain-text" type="text" placeholder="write text" readonly rows="3" cols="4"></textarea>
+        <br>
+        <label for="Cipher-textt">Ciphertext: </label>
+        <textarea id="Cipher-text" type="text" placeholder="cipher will appear here after decrypt button is pressed" rows="3" cols="4"></textarea>
+        <br>
+        <button type="button" id="decrypt-key">Decrypt</button>
+        <button type="button" id="back">Back</button>
+    </form>
+
+    <script>
+        const base64ToArrayBuffer = (base64) => {
+        let binaryString = atob(base64);
+        let bytes = new Uint8Array(binaryString.length);
+        return bytes.map((byte, i) => binaryString.charCodeAt(i));
+        };
+
+        const arrayBufferToBase64 = (buffer) => {
+            let binary = '';
+            let bytes = new Uint8Array(buffer);
+            let len = bytes.byteLength;
+            for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        };
+
+                const decryptWithPrivateKey = async (privateKey, ciphertext) => {
+                let importedKey = await window.crypto.subtle.importKey(
+                    "pkcs8",
+                    base64ToArrayBuffer(privateKey),
+                    {
+                        name: "RSA-OAEP",
+                        hash: {name: "SHA-256"},
+                    },
+                    false,
+                    ["decrypt"]
+                );
+
+                let encryptedData = base64ToArrayBuffer(ciphertext);
+                let decryptedData = await window.crypto.subtle.decrypt(
+                    {name: "RSA-OAEP"},
+                    importedKey,
+                    encryptedData
+                );
+
+                return new TextDecoder().decode(decryptedData);
+            };
+
+            document.getElementById('decrypt-key').addEventListener('click', async () => {
+            const privateKey = document.getElementById('private-key').value.trim();
+            const ciphertext = document.getElementById('Cipher-text').value.trim(); 
+
+            if (privateKey && ciphertext) {
+                try {
+                    const decryptedText = await decryptWithPrivateKey(privateKey, ciphertext);
+                    document.getElementById('plain-text').value = decryptedText;
+                } catch (error) {
+                    console.error('Decryption failed', error);
+                    alert('Decryption failed. Make sure the private key is correct and in the proper Base64-encoded format.');
+                }
+            } else {
+                alert('Please enter a private key and ciphertext to decrypt.');
+            }
+        });
+
+        document.getElementById('back').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

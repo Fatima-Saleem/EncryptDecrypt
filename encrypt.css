@@ -1,0 +1,78 @@
+body{
+    margin: 0;
+    font-family: Fira Sans, sans-serif;
+    background-color: blanchedalmond;
+    justify-content: center;
+    align-items: center;
+}
+
+#heading{
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+    display: flex;
+    flex-direction: column;
+}
+
+#key-form{
+    font-size: 1.5em;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 20px;
+    box-shadow: 0px 0px 10px rgb(229, 175, 93);
+    box-sizing: border-box;
+    margin: 10px auto;
+    padding: 20px;
+    max-width: 400px;
+    min-height: 300px;
+    margin-bottom: 50px;
+}
+
+#key-form textarea {
+    border: 1px solid #ccc;
+    border-radius: 4px; 
+    padding: 8px; 
+    width: 100%; 
+    box-sizing: border-box; 
+    margin: 10px 0; 
+}
+
+#public-keys{
+    font-size: 1em;
+    margin: 10px;
+}
+
+#private-keys{
+    font-size: 1em;
+    margin-top: 10px;
+}
+
+#private-key, #public-key{
+    font-size: 0.8em;
+}
+
+#encrypt-key, #back{
+    font-size: 0.8em;
+    margin-top: 15px;
+    background-color: rgb(247, 210, 154);
+    border-radius: 15px;
+    padding: 8px;
+}
+
+#encrypt-key:hover, #back:hover{
+    background-color: rgb(239, 177, 85);
+    border-radius: 5px;
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    #heading{
+        flex-direction: column; 
+    }
+  
+    #key-form{
+        display: flex;
+    }
+}
