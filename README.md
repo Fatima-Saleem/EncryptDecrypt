@@ -1,7 +1,8 @@
 # EncryptDecrypt
 
 link: https://fatima-saleem.github.io/EncryptDecrypt/index.html
-To use this encryption, decryption take note of private, public key and cipher text. Follow the below steps.
+
+To use this encryption, and decryption, take note of private, and public key and cipher text. Follow the below steps.
 1.	Key Generation: 
 i)	Generate a public/private key pair on the Key Generator Page.
 ii)	Public key and private key will be displayed in their respective fields, typically encoded in Base64 so they can be easily copied and pasted. 
